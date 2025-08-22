@@ -4,6 +4,10 @@ import Sidebar from "@/components/Navigation/Sidebar";
 import StatsCards from "@/components/Dashboard/StatsCards";
 import DomainsGrid from "@/components/Domains/DomainsGrid";
 import PluginsTable from "@/components/Plugins/PluginsTable";
+import VulnerabilitiesTable from "@/components/Vulnerabilities/VulnerabilitiesTable";
+import AnalyticsDashboard from "@/components/Analytics/AnalyticsDashboard";
+import FiltersPanel from "@/components/Filters/FiltersPanel";
+import SettingsPanel from "@/components/Settings/SettingsPanel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Index = () => {
@@ -23,9 +27,13 @@ const Index = () => {
           <StatsCards />
           
           <Tabs defaultValue="domains" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-              <TabsTrigger value="domains">Domains Overview</TabsTrigger>
-              <TabsTrigger value="plugins">Plugin Management</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-6 lg:w-full">
+              <TabsTrigger value="domains">Domains</TabsTrigger>
+              <TabsTrigger value="plugins">Plugins</TabsTrigger>
+              <TabsTrigger value="vulnerabilities">Vulnerabilities</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="filters">Filters</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
             
             <TabsContent value="domains" className="space-y-6">
@@ -34,6 +42,22 @@ const Index = () => {
             
             <TabsContent value="plugins" className="space-y-6">
               <PluginsTable />
+            </TabsContent>
+            
+            <TabsContent value="vulnerabilities" className="space-y-6">
+              <VulnerabilitiesTable />
+            </TabsContent>
+            
+            <TabsContent value="analytics" className="space-y-6">
+              <AnalyticsDashboard />
+            </TabsContent>
+            
+            <TabsContent value="filters" className="space-y-6">
+              <FiltersPanel />
+            </TabsContent>
+            
+            <TabsContent value="settings" className="space-y-6">
+              <SettingsPanel />
             </TabsContent>
           </Tabs>
         </main>

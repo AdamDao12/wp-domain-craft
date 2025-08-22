@@ -9,121 +9,118 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, Shield, Bug, Calendar, ExternalLink } from "lucide-react";
+import { AlertTriangle, ExternalLink, MoreHorizontal } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Vulnerability {
-  id: string;
-  title: string;
-  severity: "critical" | "high" | "medium" | "low";
   domain: string;
-  plugin: string;
-  cve: string;
-  discovered: string;
-  status: "open" | "patching" | "fixed";
-  description: string;
+  pluginSlug: string;
+  currentVersion: string;
+  patchedVersion: string;
+  pluginPath: string;
+  cvssRating: number;
+  priority: "Critical" | "High" | "Medium" | "Low";
+  checkTime: string;
+  vulnerabilityDescription: string;
 }
 
 const mockVulnerabilities: Vulnerability[] = [
   {
-    id: "1",
-    title: "SQL Injection in Contact Form",
-    severity: "critical",
-    domain: "corporate.example.com",
-    plugin: "Contact Form 7",
-    cve: "CVE-2024-0001",
-    discovered: "2024-01-20",
-    status: "open",
-    description: "Remote code execution via unsanitized input fields"
+    domain: "www.medema.cz",
+    pluginSlug: "contact-form-7",
+    currentVersion: "5.6.4",
+    patchedVersion: "5.7.1",
+    pluginPath: "/wp-content/plugins/contact-form-7/",
+    cvssRating: 9.1,
+    priority: "Critical",
+    checkTime: "2024-01-15 14:30:22",
+    vulnerabilityDescription: "SQL Injection vulnerability in form processing allows unauthorized database access"
   },
   {
-    id: "2",
-    title: "XSS Vulnerability in Comments",
-    severity: "high",
-    domain: "techblog.example.com",
-    plugin: "Yoast SEO",
-    cve: "CVE-2024-0002",
-    discovered: "2024-01-18",
-    status: "patching",
-    description: "Cross-site scripting through comment metadata"
+    domain: "blog.example.com",
+    pluginSlug: "woocommerce",
+    currentVersion: "7.8.2",
+    patchedVersion: "7.9.0",
+    pluginPath: "/wp-content/plugins/woocommerce/",
+    cvssRating: 7.5,
+    priority: "High",
+    checkTime: "2024-01-15 13:45:10",
+    vulnerabilityDescription: "Cross-Site Scripting (XSS) in product search functionality"
   },
   {
-    id: "3",
-    title: "Path Traversal in File Upload",
-    severity: "medium",
-    domain: "corporate.example.com",
-    plugin: "Elementor",
-    cve: "CVE-2024-0003",
-    discovered: "2024-01-15",
-    status: "open",
-    description: "Unauthorized file access via directory traversal"
+    domain: "shop.website.com",
+    pluginSlug: "user-role-editor",
+    currentVersion: "4.62.3",
+    patchedVersion: "4.63.0",
+    pluginPath: "/wp-content/plugins/user-role-editor/",
+    cvssRating: 8.8,
+    priority: "Critical",
+    checkTime: "2024-01-15 12:20:45",
+    vulnerabilityDescription: "Authentication bypass vulnerability allows unauthorized admin access"
   },
   {
-    id: "4",
-    title: "CSRF in Admin Panel",
-    severity: "medium",
-    domain: "news.example.com",
-    plugin: "Akismet",
-    cve: "CVE-2024-0004",
-    discovered: "2024-01-12",
-    status: "fixed",
-    description: "Cross-site request forgery in settings page"
+    domain: "news.site.org",
+    pluginSlug: "wp-file-manager",
+    currentVersion: "7.1.5",
+    patchedVersion: "7.1.8",
+    pluginPath: "/wp-content/plugins/wp-file-manager/",
+    cvssRating: 6.3,
+    priority: "Medium",
+    checkTime: "2024-01-15 11:15:33",
+    vulnerabilityDescription: "Directory traversal vulnerability in file upload functionality"
   },
   {
-    id: "5",
-    title: "Information Disclosure",
-    severity: "low",
-    domain: "portfolio.example.com",
-    plugin: "WP Super Cache",
-    cve: "CVE-2024-0005",
-    discovered: "2024-01-10",
-    status: "open",
-    description: "Sensitive information exposed in debug logs"
+    domain: "company.business.com",
+    pluginSlug: "yoast-seo",
+    currentVersion: "20.8",
+    patchedVersion: "20.9",
+    pluginPath: "/wp-content/plugins/wordpress-seo/",
+    cvssRating: 4.2,
+    priority: "Low",
+    checkTime: "2024-01-15 10:30:18",
+    vulnerabilityDescription: "Information disclosure through debug output in development mode"
+  },
+  {
+    domain: "blog.example.com",
+    pluginSlug: "elementor",
+    currentVersion: "3.14.1",
+    patchedVersion: "3.15.0",
+    pluginPath: "/wp-content/plugins/elementor/",
+    cvssRating: 5.8,
+    priority: "Medium",
+    checkTime: "2024-01-15 09:45:27",
+    vulnerabilityDescription: "Cross-Site Request Forgery (CSRF) in widget configuration"
   }
 ];
 
 const VulnerabilitiesTable = () => {
-  const getSeverityBadge = (severity: string) => {
+  const getPriorityBadge = (priority: string) => {
     const config = {
-      critical: "bg-destructive text-destructive-foreground",
-      high: "bg-orange-500 text-white",
-      medium: "bg-warning text-warning-foreground",
-      low: "bg-blue-500 text-white"
+      Critical: "bg-destructive text-destructive-foreground",
+      High: "bg-orange-500 text-white",
+      Medium: "bg-yellow-500 text-black",
+      Low: "bg-blue-500 text-white"
     };
-    
-    return (
-      <Badge className={config[severity as keyof typeof config]}>
-        <AlertTriangle className="h-3 w-3 mr-1" />
-        {severity.toUpperCase()}
-      </Badge>
-    );
+    return config[priority as keyof typeof config] || "bg-gray-500 text-white";
   };
 
-  const getStatusBadge = (status: string) => {
-    const config = {
-      open: "bg-destructive text-destructive-foreground",
-      patching: "bg-warning text-warning-foreground", 
-      fixed: "bg-success text-success-foreground"
-    };
-    
-    const icons = {
-      open: <Bug className="h-3 w-3 mr-1" />,
-      patching: <Shield className="h-3 w-3 mr-1" />,
-      fixed: <Shield className="h-3 w-3 mr-1" />
-    };
-    
-    return (
-      <Badge className={config[status as keyof typeof config]}>
-        {icons[status as keyof typeof icons]}
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </Badge>
-    );
+  const getCVSSColor = (rating: number) => {
+    if (rating >= 9.0) return "text-destructive font-bold";
+    if (rating >= 7.0) return "text-orange-600 font-semibold";
+    if (rating >= 4.0) return "text-yellow-600 font-medium";
+    return "text-blue-600";
   };
 
-  const severityCounts = {
-    critical: mockVulnerabilities.filter(v => v.severity === "critical").length,
-    high: mockVulnerabilities.filter(v => v.severity === "high").length,
-    medium: mockVulnerabilities.filter(v => v.severity === "medium").length,
-    low: mockVulnerabilities.filter(v => v.severity === "low").length
+  const priorityCounts = {
+    Critical: mockVulnerabilities.filter(v => v.priority === "Critical").length,
+    High: mockVulnerabilities.filter(v => v.priority === "High").length,
+    Medium: mockVulnerabilities.filter(v => v.priority === "Medium").length,
+    Low: mockVulnerabilities.filter(v => v.priority === "Low").length
   };
 
   return (
@@ -133,7 +130,7 @@ const VulnerabilitiesTable = () => {
         <Button>Scan All Sites</Button>
       </div>
 
-      {/* Severity Overview Cards */}
+      {/* Priority Overview Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="border-destructive/20 bg-gradient-to-br from-destructive/5 to-destructive/10">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -141,7 +138,7 @@ const VulnerabilitiesTable = () => {
             <AlertTriangle className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-destructive">{severityCounts.critical}</div>
+            <div className="text-2xl font-bold text-destructive">{priorityCounts.Critical}</div>
           </CardContent>
         </Card>
         
@@ -151,7 +148,7 @@ const VulnerabilitiesTable = () => {
             <AlertTriangle className="h-4 w-4 text-orange-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-500">{severityCounts.high}</div>
+            <div className="text-2xl font-bold text-orange-500">{priorityCounts.High}</div>
           </CardContent>
         </Card>
         
@@ -161,7 +158,7 @@ const VulnerabilitiesTable = () => {
             <AlertTriangle className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-warning">{severityCounts.medium}</div>
+            <div className="text-2xl font-bold text-warning">{priorityCounts.Medium}</div>
           </CardContent>
         </Card>
         
@@ -171,7 +168,7 @@ const VulnerabilitiesTable = () => {
             <AlertTriangle className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-500">{severityCounts.low}</div>
+            <div className="text-2xl font-bold text-blue-500">{priorityCounts.Low}</div>
           </CardContent>
         </Card>
       </div>
@@ -181,53 +178,57 @@ const VulnerabilitiesTable = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Vulnerability</TableHead>
-              <TableHead>Severity</TableHead>
               <TableHead>Domain</TableHead>
-              <TableHead>Plugin</TableHead>
-              <TableHead>CVE</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Discovered</TableHead>
+              <TableHead>Plugin Slug</TableHead>
+              <TableHead>Current Version</TableHead>
+              <TableHead>Patched Version</TableHead>
+              <TableHead>Plugin Path</TableHead>
+              <TableHead>CVSS Rating</TableHead>
+              <TableHead>Priority</TableHead>
+              <TableHead>Check Time</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mockVulnerabilities.map((vuln) => (
-              <TableRow key={vuln.id} className="hover:bg-muted/50">
+            {mockVulnerabilities.map((vuln, index) => (
+              <TableRow key={index} className="hover:bg-muted/50">
+                <TableCell className="font-medium">{vuln.domain}</TableCell>
                 <TableCell>
-                  <div>
-                    <div className="font-medium">{vuln.title}</div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {vuln.description}
-                    </div>
-                  </div>
+                  <code className="text-sm bg-muted px-2 py-1 rounded">{vuln.pluginSlug}</code>
                 </TableCell>
-                <TableCell>{getSeverityBadge(vuln.severity)}</TableCell>
-                <TableCell className="text-muted-foreground">{vuln.domain}</TableCell>
-                <TableCell>{vuln.plugin}</TableCell>
+                <TableCell>{vuln.currentVersion}</TableCell>
+                <TableCell className="font-medium text-success">{vuln.patchedVersion}</TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-1">
-                    <code className="text-xs bg-muted px-1 py-0.5 rounded">{vuln.cve}</code>
-                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                      <ExternalLink className="h-3 w-3" />
-                    </Button>
-                  </div>
+                  <code className="text-xs bg-muted px-2 py-1 rounded font-mono">{vuln.pluginPath}</code>
                 </TableCell>
-                <TableCell>{getStatusBadge(vuln.status)}</TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <Calendar className="h-3 w-3" />
-                    {vuln.discovered}
-                  </div>
+                  <span className={getCVSSColor(vuln.cvssRating)}>
+                    {vuln.cvssRating.toFixed(1)}
+                  </span>
                 </TableCell>
+                <TableCell>
+                  <Badge className={getPriorityBadge(vuln.priority)}>
+                    {vuln.priority}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">{vuln.checkTime}</TableCell>
                 <TableCell>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm">Details</Button>
-                    {vuln.status === "open" && (
-                      <Button size="sm" className="bg-destructive text-destructive-foreground">
-                        Fix Now
-                      </Button>
-                    )}
+                    <Button variant="outline" size="sm" title={vuln.vulnerabilityDescription}>
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>Update Plugin</DropdownMenuItem>
+                        <DropdownMenuItem>Mark as Fixed</DropdownMenuItem>
+                        <DropdownMenuItem>Ignore</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </TableCell>
               </TableRow>

@@ -13,53 +13,42 @@ import { useState } from "react";
 
 interface SidebarProps {
   className?: string;
+  activeTab?: string;
+  onTabChange?: (tab: string) => void;
 }
 
-const Sidebar = ({ className }: SidebarProps) => {
-  const [activeItem, setActiveItem] = useState("dashboard");
+const Sidebar = ({ className, activeTab = "domains", onTabChange }: SidebarProps) => {
 
   const menuItems = [
-    {
-      id: "dashboard",
-      label: "Dashboard",
-      icon: Home,
-      href: "#"
-    },
     {
       id: "domains",
       label: "Domains",
       icon: Globe,
-      href: "#"
     },
     {
       id: "plugins",
       label: "Plugins",
       icon: Shield,
-      href: "#"
     },
     {
       id: "vulnerabilities",
       label: "Vulnerabilities",
       icon: AlertTriangle,
-      href: "#"
     },
     {
       id: "analytics",
       label: "Analytics", 
       icon: BarChart3,
-      href: "#"
     },
     {
       id: "filters",
       label: "Filters",
       icon: Filter,
-      href: "#"
     },
     {
       id: "settings",
       label: "Settings",
       icon: Settings,
-      href: "#"
     }
   ];
 
@@ -73,12 +62,12 @@ const Sidebar = ({ className }: SidebarProps) => {
               return (
                 <Button
                   key={item.id}
-                  variant={activeItem === item.id ? "secondary" : "ghost"}
+                  variant={activeTab === item.id ? "secondary" : "ghost"}
                   className={cn(
                     "w-full justify-start gap-3 h-10",
-                    activeItem === item.id && "bg-primary/10 text-primary font-medium"
+                    activeTab === item.id && "bg-primary/10 text-primary font-medium"
                   )}
-                  onClick={() => setActiveItem(item.id)}
+                  onClick={() => onTabChange?.(item.id)}
                 >
                   <Icon className="h-4 w-4" />
                   {item.label}

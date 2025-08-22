@@ -9,13 +9,16 @@ import AnalyticsDashboard from "@/components/Analytics/AnalyticsDashboard";
 import FiltersPanel from "@/components/Filters/FiltersPanel";
 import SettingsPanel from "@/components/Settings/SettingsPanel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
 
 const Index = () => {
+  const [activeTab, setActiveTab] = useState("domains");
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <div className="flex">
-        <Sidebar />
+        <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
         <main className="flex-1 p-6 space-y-6">
           <div className="space-y-2">
             <h1 className="text-3xl font-bold tracking-tight">WordPress Security Dashboard</h1>
@@ -26,7 +29,7 @@ const Index = () => {
           
           <StatsCards />
           
-          <Tabs defaultValue="domains" className="space-y-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-6 lg:w-full">
               <TabsTrigger value="domains">Domains</TabsTrigger>
               <TabsTrigger value="plugins">Plugins</TabsTrigger>
